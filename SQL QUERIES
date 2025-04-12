@@ -1256,3 +1256,263 @@ Learn Round & Average Functions
 
 -------------------------------------------------------------------------------------------------------------------------
 
+18. Percentage of Users Attended a Contest
+
+Table: Users
+
++-------------+---------+
+| Column Name | Type    |
++-------------+---------+
+| user_id     | int     |
+| user_name   | varchar |
++-------------+---------+
+user_id is the primary key (column with unique values) for this table.
+Each row of this table contains the name and the id of a user.
+ 
+
+Table: Register
+
++-------------+---------+
+| Column Name | Type    |
++-------------+---------+
+| contest_id  | int     |
+| user_id     | int     |
++-------------+---------+
+(contest_id, user_id) is the primary key (combination of columns with unique values) for this table.
+Each row of this table contains the id of a user and the contest they registered into.
+ 
+
+Write a solution to find the percentage of the users registered in each contest rounded to two decimals.
+
+Return the result table ordered by percentage in descending order. In case of a tie, order it by contest_id in 
+ascending order.
+
+The result format is in the following example.
+
+ 
+
+Example 1:
+
+Input: 
+Users table:
++---------+-----------+
+| user_id | user_name |
++---------+-----------+
+| 6       | Alice     |
+| 2       | Bob       |
+| 7       | Alex      |
++---------+-----------+
+Register table:
++------------+---------+
+| contest_id | user_id |
++------------+---------+
+| 215        | 6       |
+| 209        | 2       |
+| 208        | 2       |
+| 210        | 6       |
+| 208        | 6       |
+| 209        | 7       |
+| 209        | 6       |
+| 215        | 7       |
+| 208        | 7       |
+| 210        | 2       |
+| 207        | 2       |
+| 210        | 7       |
++------------+---------+
+Output: 
++------------+------------+
+| contest_id | percentage |
++------------+------------+
+| 208        | 100.0      |
+| 209        | 100.0      |
+| 210        | 100.0      |
+| 215        | 66.67      |
+| 207        | 33.33      |
++------------+------------+
+Explanation: 
+All the users registered in contests 208, 209, and 210. The percentage is 100% and we sort them in the answer table 
+by contest_id in ascending order.
+Alice and Alex registered in contest 215 and the percentage is ((2/3) * 100) = 66.67%
+Bob registered in contest 207 and the percentage is ((1/3) * 100) = 33.33%
+
+
+
+Solution:
+
+select contest_id, round(count(distinct user_id) * 100/(select count(user_id) from users),2) 
+as percentage from register group by contest_id order by percentage desc,
+contest_id;
+
+---------------------------------------------------------------------------------------------------------------------------
+
+19. Queries Quality and Percentage
+
+Table: Queries
+
++-------------+---------+
+| Column Name | Type    |
++-------------+---------+
+| query_name  | varchar |
+| result      | varchar |
+| position    | int     |
+| rating      | int     |
++-------------+---------+
+This table may have duplicate rows.
+This table contains information collected from some queries on a database.
+The position column has a value from 1 to 500.
+The rating column has a value from 1 to 5. Query with rating less than 3 is a poor query.
+ 
+
+We define query quality as:
+
+The average of the ratio between query rating and its position.
+
+We also define poor query percentage as:
+
+The percentage of all queries with rating less than 3.
+
+Write a solution to find each query_name, the quality and poor_query_percentage.
+
+Both quality and poor_query_percentage should be rounded to 2 decimal places.
+
+Return the result table in any order.
+
+The result format is in the following example. 
+
+Example 1:
+
+Input: 
+Queries table:
++------------+-------------------+----------+--------+
+| query_name | result            | position | rating |
++------------+-------------------+----------+--------+
+| Dog        | Golden Retriever  | 1        | 5      |
+| Dog        | German Shepherd   | 2        | 5      |
+| Dog        | Mule              | 200      | 1      |
+| Cat        | Shirazi           | 5        | 2      |
+| Cat        | Siamese           | 3        | 3      |
+| Cat        | Sphynx            | 7        | 4      |
++------------+-------------------+----------+--------+
+Output: 
++------------+---------+-----------------------+
+| query_name | quality | poor_query_percentage |
++------------+---------+-----------------------+
+| Dog        | 2.50    | 33.33                 |
+| Cat        | 0.66    | 33.33                 |
++------------+---------+-----------------------+
+Explanation: 
+Dog queries quality is ((5 / 1) + (5 / 2) + (1 / 200)) / 3 = 2.50
+Dog queries poor_ query_percentage is (1 / 3) * 100 = 33.33
+
+Cat queries quality equals ((2 / 5) + (3 / 3) + (4 / 7)) / 3 = 0.66
+Cat queries poor_ query_percentage is (1 / 3) * 100 = 33.33
+
+
+Solution:
+
+# Write your MySQL query statement below
+select query_name, round(sum(rating/position)/count(rating),2) as quality, 
+round(sum(IF(rating<3, 1, 0))/count(rating) * 100 ,2 ) as poor_query_percentage from queries group by query_name;
+
+----------------------------------------------------------------------------------------------------------------------
+Learn about if round count sum functions
+----------------------------------------------------------------------------------------------------------------------
+
+
+20.  Monthly Transactions I
+
+Table: Transactions
+
++---------------+---------+
+| Column Name   | Type    |
++---------------+---------+
+| id            | int     |
+| country       | varchar |
+| state         | enum    |
+| amount        | int     |
+| trans_date    | date    |
++---------------+---------+
+id is the primary key of this table.
+The table has information about incoming transactions.
+The state column is an enum of type ["approved", "declined"].
+ 
+
+Write an SQL query to find for each month and country, the number of transactions and their total amount, the 
+number of approved transactions and their total amount.
+
+Return the result table in any order.
+
+The query result format is in the following example.
+
+ 
+
+Example 1:
+
+Input: 
+Transactions table:
++------+---------+----------+--------+------------+
+| id   | country | state    | amount | trans_date |
++------+---------+----------+--------+------------+
+| 121  | US      | approved | 1000   | 2018-12-18 |
+| 122  | US      | declined | 2000   | 2018-12-19 |
+| 123  | US      | approved | 2000   | 2019-01-01 |
+| 124  | DE      | approved | 2000   | 2019-01-07 |
++------+---------+----------+--------+------------+
+Output: 
++----------+---------+-------------+----------------+--------------------+-----------------------+
+| month    | country | trans_count | approved_count | trans_total_amount | approved_total_amount |
++----------+---------+-------------+----------------+--------------------+-----------------------+
+| 2018-12  | US      | 2           | 1              | 3000               | 1000                  |
+| 2019-01  | US      | 1           | 1              | 2000               | 2000                  |
+| 2019-01  | DE      | 1           | 1              | 2000               | 2000                  |
++----------+---------+-------------+----------------+--------------------+-----------------------+
+
+
+Solution:
+
+Intuition
+The goal is to aggregate transaction data by month and country. We need to count the total number of 
+transactions and approved transactions, and sum the transaction amounts both overall and for approved 
+transactions only.
+
+Approach
+Extract Month and Year:
+Use the LEFT function to get the YYYY-MM part from the trans_date. The LEFT() function extracts a number of 
+characters from a string (starting from left).
+
+Group By Month and Country:
+Group the transactions by the extracted month and country.
+
+Count Transactions:
+Use COUNT(id) to count all transactions per group.
+
+Count Approved Transactions:
+Use SUM(state = 'approved') to count approved transactions, leveraging the fact that boolean expressions return 1 
+for true and 0 for false.
+
+Sum Total Amounts:
+Use SUM(amount) to sum the transaction amounts for all transactions per group.
+
+Sum Approved Amounts:
+Use SUM((state = 'approved') * amount) to sum the transaction amounts for approved transactions, ensuring only 
+approved amounts are summed.
+
+Code
+SELECT 
+    LEFT(trans_date, 7) AS month,
+    country, 
+    COUNT(id) AS trans_count,
+    SUM(state = 'approved') AS approved_count,
+    SUM(amount) AS trans_total_amount,
+    SUM((state = 'approved') * amount) AS approved_total_amount
+FROM 
+    Transactions
+GROUP BY 
+    month, country;
+
+
+  SUM((state = 'approved') * amount) ------- learn about it
+
+--------------------------------------------------------------------------------------------------------------------------
+
+
