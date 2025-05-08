@@ -1,0 +1,118 @@
+Classes More Than 5 Students
+
+Table: Courses
+
++-------------+---------+
+| Column Name | Type    |
++-------------+---------+
+| student     | varchar |
+| class       | varchar |
++-------------+---------+
+(student, class) is the primary key (combination of columns with unique values) for this table.
+Each row of this table indicates the name of a student and the class in which they are enrolled.
+ 
+
+Write a solution to find all the classes that have at least five students.
+
+Return the result table in any order.
+
+The result format is in the following example.
+
+ 
+
+Example 1:
+
+Input: 
+Courses table:
++---------+----------+
+| student | class    |
++---------+----------+
+| A       | Math     |
+| B       | English  |
+| C       | Math     |
+| D       | Biology  |
+| E       | Math     |
+| F       | Computer |
+| G       | Math     |
+| H       | Math     |
+| I       | Math     |
++---------+----------+
+Output: 
++---------+
+| class   |
++---------+
+| Math    |
++---------+
+Explanation: 
+- Math has 6 students, so we include it.
+- English has 1 student, so we do not include it.
+- Biology has 1 student, so we do not include it.
+- Computer has 1 student, so we do not include it.
+
+
+Solution:
+
+SELECT class
+FROM courses
+GROUP BY class
+HAVING COUNT(*) >= 5;
+
+
+✅ What this query does:
+SELECT class: We're interested in the class column.
+
+FROM courses: We're pulling data from the courses table.
+
+GROUP BY class: We group rows that have the same value in the class column — this creates one 
+row per unique class.
+
+HAVING COUNT(*) >= 5: We filter these groups to only return classes that appear 5 or more times in the table.
+
+🔸 HAVING is like WHERE, but it's used after grouping.
+
+📘 Example:
+Sample courses Table:
+id	class
+1	Math
+2	Physics
+3	Math
+4	Math
+5	Biology
+6	Math
+7	Physics
+8	Math
+9	Biology
+10	Physics
+11	Physics
+12	Physics
+13	Chemistry
+
+Step 1: Group by class
+Let’s count how many times each class appears:
+
+class	count(*)
+Math	5
+Physics	5
+Biology	2
+Chemistry	1
+
+Step 2: Apply HAVING COUNT(*) >= 5
+This filters out any groups with less than 5 rows:
+
+class
+Math
+Physics
+
+✅ Final Result:
+The query will return:
+
+
+Math
+Physics
+These are the classes that have 5 or more students/records in the courses table.
+
+🔁 Summary of Key SQL Concepts:
+Clause	Purpose
+GROUP BY	Combines rows with same class value
+COUNT(*)	Counts how many rows in each group
+HAVING	Filters groups (used after GROUP BY)
